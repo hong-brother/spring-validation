@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,14 @@ public class AdviceController {
                 .value(error.getRejectedValue().toString()).build()).collect(Collectors.toList());
 
         res.setError(errorModelList);
+        return ResponseEntity.ok(res);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity handleValidationException(ConstraintViolationException e){
+        ResponseMessage res = ResponseMessage.builder().build();
+        res.setError(e);
         return ResponseEntity.ok(res);
     }
 }
